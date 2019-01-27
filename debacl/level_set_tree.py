@@ -1380,14 +1380,14 @@ def construct_tree_from_graph(adjacency_list, density, prune_threshold=None,
 
         ## compute the mass after the current bg set is removed
         old_vcount = sum([x.number_of_nodes()
-                          for x in T._subgraphs.itervalues()])
+                          for x in T._subgraphs.values()])
         current_mass = 1. - ((old_vcount - len(bg)) / n)
 
         # loop through active components, i.e. subgraphs
         deactivate_keys = []     # subgraphs to deactivate at the iter end
         activate_subgraphs = {}  # new subgraphs to add at the end of the iter
 
-        for (k, H) in T._subgraphs.iteritems():
+        for (k, H) in T._subgraphs.items():
 
             ## remove nodes at the current level
             H.remove_nodes_from(bg)
