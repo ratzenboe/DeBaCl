@@ -271,7 +271,7 @@ class LevelSetTree(object):
         split_coords = {}
 
         ## Find the root connected components and corresponding plot intervals
-        ix_root = _np.array([k for k, v in self.nodes.iteritems()
+        ix_root = _np.array([k for k, v in self.nodes.items()
                              if v.parent is None])
         n_root = len(ix_root)
         census = _np.array([len(self.nodes[x].members) for x in ix_root],
@@ -331,15 +331,15 @@ class LevelSetTree(object):
 
         elif form == 'density':
             ax.set_ylabel("density level")
-            ymin = min([v.start_level for v in self.nodes.itervalues()])
-            ymax = max([v.end_level for v in self.nodes.itervalues()])
+            ymin = min([v.start_level for v in self.nodes.values()])
+            ymax = max([v.end_level for v in self.nodes.values()])
             yrange = ymax - ymin
             ax.set_ylim(ymin - gap * yrange, ymax + 0.05 * yrange)
 
         elif form == 'mass':
             ax.set_ylabel("mass level")
-            ymin = min([v.start_mass for v in self.nodes.itervalues()])
-            ymax = max([v.end_mass for v in self.nodes.itervalues()])
+            ymin = min([v.start_mass for v in self.nodes.values()])
+            ymax = max([v.end_mass for v in self.nodes.values()])
             yrange = ymax - ymin
             ax.set_ylim(ymin - gap * yrange, ymax + 0.05 * yrange)
 
@@ -604,7 +604,7 @@ class LevelSetTree(object):
         tree.prune_threshold = threshold
 
         ## remove small root branches
-        small_roots = [k for k, v in tree.nodes.iteritems()
+        small_roots = [k for k, v in tree.nodes.items()
                        if v.parent is None and len(v.members) <= threshold]
 
         for root in small_roots:
@@ -613,7 +613,7 @@ class LevelSetTree(object):
                 del tree.nodes[ix]
 
         ## main pruning
-        parents = [k for k, v in tree.nodes.iteritems()
+        parents = [k for k, v in tree.nodes.items()
                    if len(v.children) >= 1]
         parents = _np.sort(parents)[::-1]
 
@@ -624,7 +624,7 @@ class LevelSetTree(object):
             kid_size = {k: len(tree.nodes[k].members) for k in parent.children}
 
             # count children larger than 'threshold'
-            n_bigkid = sum(_np.array(kid_size.values()) >= threshold)
+            n_bigkid = sum(_np.array(list(kid_size.values())) >= threshold)
 
             if n_bigkid == 0:
                 # update parent's end level and end mass
@@ -641,7 +641,7 @@ class LevelSetTree(object):
             elif n_bigkid == 1:
                 pass
                 # identify the big kid
-                ix_bigkid = [k for k, v in kid_size.iteritems()
+                ix_bigkid = [k for k, v in kid_size.items()
                              if v >= threshold][0]
                 bigkid = tree.nodes[ix_bigkid]
 
@@ -787,7 +787,7 @@ class LevelSetTree(object):
 
         else:
             upper_level_set = _np.where(_np.array(self.density) > threshold)[0]
-            active_nodes = [k for k, v in self.nodes.iteritems()
+            active_nodes = [k for k, v in self.nodes.items()
                             if (v.start_level <= threshold and
                                 v.end_level > threshold)]
 
@@ -835,7 +835,7 @@ class LevelSetTree(object):
         """
 
         cut = self._find_K_cut(k)
-        nodes = [e for e, v in self.nodes.iteritems()
+        nodes = [e for e, v in self.nodes.items()
                  if v.start_level <= cut and v.end_level > cut]
 
         points = []
@@ -896,25 +896,25 @@ class LevelSetTree(object):
         """
 
         ## Find the lowest level to cut at that has k or more clusters
-        starts = [v.start_level for v in self.nodes.itervalues()]
-        ends = [v.end_level for v in self.nodes.itervalues()]
+        starts = [v.start_level for v in self.nodes.values()]
+        ends = [v.end_level for v in self.nodes.values()]
         crits = _np.unique(starts + ends)
         nclust = {}
 
         for c in crits:
-            nclust[c] = len([e for e, v in self.nodes.iteritems()
+            nclust[c] = len([e for e, v in self.nodes.items()
                              if v.start_level <= c and v.end_level > c])
 
         width = _np.max(nclust.values())
 
         if k in nclust.values():
-            cut = _np.min([e for e, v in nclust.iteritems() if v == k])
+            cut = _np.min([e for e, v in nclust.items() if v == k])
         else:
             if width < k:
-                cut = _np.min([e for e, v in nclust.iteritems() if v == width])
+                cut = _np.min([e for e, v in nclust.items() if v == width])
             else:
-                ktemp = _np.min([v for v in nclust.itervalues() if v > k])
-                cut = _np.min([e for e, v in nclust.iteritems() if v == ktemp])
+                ktemp = _np.min([v for v in nclust.values() if v > k])
+                cut = _np.min([e for e, v in nclust.items() if v == ktemp])
 
         return cut
 
@@ -1039,8 +1039,8 @@ class LevelSetTree(object):
 
                 segmap += branch_segmap
                 splitmap += branch_splitmap
-                splits = dict(splits.items() + branch_splits.items())
-                segments = dict(segments.items() + branch_segs.items())
+                splits = dict(list(splits.items()) + list(branch_splits.items()))
+                segments = dict(list(segments.items()) + list(branch_segs.items()))
 
             ## find the middle of the children's x-position and make vertical
             #  segment ix

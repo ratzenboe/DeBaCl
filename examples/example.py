@@ -19,3 +19,24 @@ import debacl as dcl
 tree = dcl.construct_tree(X, k=20)
 
 print(tree)
+
+
+plot = tree.plot()
+plot[0].show()
+
+pruned_tree = tree.prune(60)
+pruned_tree.plot()[0].show()
+
+cluster_labels = pruned_tree.get_clusters()
+
+print("Cluster labels shape:", cluster_labels.shape)
+
+
+upper_level_idx = cluster_labels[:, 0]
+upper_level_set = X[upper_level_idx, :]
+
+with plt.style.context('ggplot'):
+    fig, ax = plt.subplots(figsize=(6, 4.5))
+    ax.scatter(upper_level_set[:, 0], upper_level_set[:, 1],
+               c=cluster_labels[:, 1], s=70, alpha=0.9)
+    fig.show()
